@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../controllers/match_controller.dart';
 import '../models/goal.dart';
 import '../widgets/timer_display.dart';
-import '../widgets/team_players_grid.dart';
+import '../widgets/team_players_columns.dart'; // 👈 NIEUW: twee kolommen 1–8 links, 9–16 rechts
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -42,13 +42,13 @@ class _HomePageState extends State<HomePage> {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final isWide = constraints.maxWidth > 900; // iets ruimer voor twee kolommen
+          final isWide = constraints.maxWidth > 900; // ruimer voor twee kolommen
           final scores = _ScoreBoard(
             homeScore: _controller.homeScore,
             awayScore: _controller.awayScore,
             onHomeGoal: (n) => _controller.addGoal(Team.home, n),
             onAwayGoal: (n) => _controller.addGoal(Team.away, n),
-            // Optioneel: geef counts door als je die knoppen wilt laten tellen
+            // optioneel: teller per speler aanhouden
             homeCounts: _countsByPlayer(Team.home),
             awayCounts: _countsByPlayer(Team.away),
           );
@@ -149,9 +149,9 @@ class _HomePageState extends State<HomePage> {
 class _ScoreBoard extends StatelessWidget {
   final int homeScore;
   final int awayScore;
-  final void Function(int) onHomeGoal; // 🔹 krijgt het spelersnummer
-  final void Function(int) onAwayGoal; // 🔹 krijgt het spelersnummer
-  final Map<int, int>? homeCounts;     // 🔹 optioneel: teller per speler
+  final void Function(int) onHomeGoal; // krijgt het spelersnummer
+  final void Function(int) onAwayGoal; // krijgt het spelersnummer
+  final Map<int, int>? homeCounts;     // optioneel: teller per speler
   final Map<int, int>? awayCounts;
 
   const _ScoreBoard({
@@ -223,6 +223,8 @@ class _TeamScore extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final team = title == 'Thuis' ? Team.home : Team.away;
+
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: color.withOpacity(0.3)),
@@ -231,12 +233,14 @@ class _TeamScore extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       child: Column(
         children: [
-          Text(title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: color,
-              )),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
           const SizedBox(height: 8),
           Text(
             '$score',
@@ -246,15 +250,14 @@ class _TeamScore extends StatelessWidget {
                 ),
           ),
           const SizedBox(height: 12),
-          // 🔹 Hier komt de grid met 26 spelerknoppen
-          TeamPlayersGrid(
-            team: title == 'Thuis' ? Team.home : Team.away,
-            playerCount: 26,
-            columns: 8,
-            visibleRows: 2, // toont 16 knoppen; scroll voor rest
-            showGoalCount: counts != null,
+
+          // 👉 Twee kolommen met "Doelpunt #n":
+          // links: #1..#8, rechts: #9..#16
+          TeamPlayersColumns(
+            team: team,
+            onPick: onGoal,                // geeft direct het nummer door
+            showGoalCount: counts != null, // toont optionele (n) teller
             goalCountsByPlayer: counts,
-            onPick: onGoal, // geeft het nummer door
           ),
         ],
       ),
