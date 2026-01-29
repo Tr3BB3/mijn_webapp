@@ -1,11 +1,11 @@
 {
-    "name": "mijn_webapp",
-    "short_name": "mijn_webapp",
+    "name": "Korfbal Statistieken",
+    "short_name": "Korfbal Statistieken",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Via deze app zijn de statistieken van de wedstrijd makkelijk bij te houden.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
