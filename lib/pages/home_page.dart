@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../controllers/match_controller.dart';
 import '../models/goal.dart';
 import '../widgets/timer_display.dart';
-import '../widgets/team_players_grid.dart'; // 🔹 nieuw: onze grid
+import '../widgets/team_players_grid.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
