@@ -10,6 +10,7 @@ import '../widgets/team_players_columns.dart';
 import '../widgets/goal_type_picker.dart';
 import '../widgets/player_name_editor.dart';
 import '../widgets/conceded_player_picker.dart';
+import '../services/pdf_exporter.dart'; // 👈 nieuw
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -38,24 +39,32 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  /// PDF exporteren (Methode A)
+  Future<void> _exportPdf() async {
+    await PdfExporter.shareReport(
+      c: _controller,
+      homeTeamName: 'Thuis',
+      awayTeamName: 'Uit',
+      fileName: 'wedstrijdverslag.pdf',
+    );
+  }
+
   /// Flow:
   /// 1) speler (#) kiezen
   /// 2) type popup
-  /// 3) EXTRA (zoals gevraagd): als UIT scoort → popup met THUIS-spelers "Tegen: ..."
+  /// 3) EXTRA: als UIT scoort → popup met THUIS-spelers "Tegen: ..."
   Future<void> _pickTypeAndAdd(Team scoringTeam, int playerNumber) async {
     final type = await showGoalTypePicker(context);
     if (type == null) return;
 
     int? conceded;
-
-    // Alleen als UIT scoort vraag je om een THUIS-speler die 'm tegen kreeg.
     if (scoringTeam == Team.away) {
       conceded = await showConcededPlayerPicker(
         context: context,
         defendingTeam: Team.home,
         players: _controller.homePlayers,
       );
-      if (conceded == null) return; // geannuleerd
+      if (conceded == null) return;
     }
 
     _controller.addGoal(
@@ -95,6 +104,13 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Wedstrijd teller'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            tooltip: 'Exporteer PDF',
+            icon: const Icon(Icons.picture_as_pdf),
+            onPressed: _exportPdf,
+          ),
+        ],
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -133,6 +149,12 @@ class _HomePageState extends State<HomePage> {
                               icon: const Icon(Icons.replay),
                               onPressed: _controller.reset,
                               label: const Text('Reset'),
+                            ),
+                            // 👇 Extra knop om ook hier te exporteren
+                            FilledButton.icon(
+                              icon: const Icon(Icons.picture_as_pdf),
+                              onPressed: _exportPdf,
+                              label: const Text('Exporteer PDF'),
                             ),
                           ],
                         ),
@@ -411,7 +433,7 @@ class _GoalTimeline extends StatelessWidget {
 
             final concededName = g.concededPlayerNumber == null
                 ? null
-                : homePlayers.getName(g.concededPlayerNumber!); // alleen bij UIT-scores
+                : homePlayers.getName(g.concededPlayerNumber!); // in jouw flow alleen bij UIT
 
             return ListTile(
               leading: Icon(
