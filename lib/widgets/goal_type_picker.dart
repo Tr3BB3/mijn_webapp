@@ -10,10 +10,12 @@ Future<GoalType?> showGoalTypePicker(BuildContext context) async {
     showDragHandle: true,
     builder: (ctx) => ListView(
       children: types
-          .map((t) => ListTile(
-                title: Text(t.label),
-                onTap: () => Navigator.pop(ctx, t),
-              ))
+          .map(
+            (t) => ListTile(
+              title: Text(t.label),
+              onTap: () => Navigator.pop(ctx, t),
+            ),
+          )
           .toList(),
     ),
   );

@@ -9,6 +9,7 @@ import '../widgets/timer_display.dart';
 import '../widgets/team_players_columns.dart';
 import '../widgets/goal_type_picker.dart';
 import '../widgets/player_name_editor.dart';
+import '../widgets/conceded_player_picker.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -37,11 +38,32 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  /// Eerst speler kiezen → dan popup met type doelpunt → daarna registreren.
-  Future<void> _pickTypeAndAdd(Team team, int playerNumber) async {
+  /// Flow:
+  /// 1) speler (#) kiezen
+  /// 2) type popup
+  /// 3) EXTRA (zoals gevraagd): als UIT scoort → popup met THUIS-spelers "Tegen: ..."
+  Future<void> _pickTypeAndAdd(Team scoringTeam, int playerNumber) async {
     final type = await showGoalTypePicker(context);
-    if (type == null) return; // gebruiker annuleerde
-    _controller.addGoal(team, playerNumber, type);
+    if (type == null) return;
+
+    int? conceded;
+
+    // Alleen als UIT scoort vraag je om een THUIS-speler die 'm tegen kreeg.
+    if (scoringTeam == Team.away) {
+      conceded = await showConcededPlayerPicker(
+        context: context,
+        defendingTeam: Team.home,
+        players: _controller.homePlayers,
+      );
+      if (conceded == null) return; // geannuleerd
+    }
+
+    _controller.addGoal(
+      scoringTeam,
+      playerNumber,
+      type,
+      concededPlayerNumber: conceded,
+    );
   }
 
   @override
@@ -56,21 +78,17 @@ class _HomePageState extends State<HomePage> {
       homeScore: _controller.homeScore,
       awayScore: _controller.awayScore,
 
-      // spelerknop → type kiezen → goal toevoegen
       onHomePick: (n) => _pickTypeAndAdd(Team.home, n),
       onAwayPick: (n) => _pickTypeAndAdd(Team.away, n),
 
-      // tellers per speler (optioneel zichtbaar op knoppen)
       homeCounts: _countsByPlayer(Team.home),
       awayCounts: _countsByPlayer(Team.away),
 
-      // spelersnamen doorgeven
       homePlayers: _controller.homePlayers,
       awayPlayers: _controller.awayPlayers,
 
-      // bewerken van namen
-      onEditHomePlayers: (updated) => _controller.updateHomePlayers(updated),
-      onEditAwayPlayers: (updated) => _controller.updateAwayPlayers(updated),
+      onEditHomePlayers: (p) => _controller.updateHomePlayers(p),
+      onEditAwayPlayers: (p) => _controller.updateAwayPlayers(p),
     );
 
     return Scaffold(
@@ -386,17 +404,24 @@ class _GoalTimeline extends StatelessWidget {
           itemBuilder: (context, index) {
             final g = goals[index];
             final isHome = g.team == Team.home;
-            final name = isHome
-                ? homePlayers.getName(g.playerNumber)
-                : awayPlayers.getName(g.playerNumber);
+
+            final scorerName =
+                isHome ? homePlayers.getName(g.playerNumber)
+                       : awayPlayers.getName(g.playerNumber);
+
+            final concededName = g.concededPlayerNumber == null
+                ? null
+                : homePlayers.getName(g.concededPlayerNumber!); // alleen bij UIT-scores
 
             return ListTile(
               leading: Icon(
                 isHome ? Icons.home : Icons.flight_takeoff,
                 color: isHome ? Colors.blue : Colors.red,
               ),
-              title: Text('${g.teamLabel} $name — ${g.type.label}'),
+              title: Text('${g.teamLabel} $scorerName — ${g.type.label}'),
+              subtitle: concededName == null ? null : Text('Tegen: $concededName'),
               trailing: Text(g.formattedTime),
+              isThreeLine: concededName != null,
             );
           },
         ),

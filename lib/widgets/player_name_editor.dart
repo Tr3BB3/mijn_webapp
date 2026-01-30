@@ -1,5 +1,4 @@
 // lib/widgets/player_name_editor.dart
-
 import 'package:flutter/material.dart';
 import '../models/players.dart';
 
@@ -15,9 +14,9 @@ Future<TeamPlayers?> showPlayerNameEditor(
   return showDialog<TeamPlayers>(
     context: context,
     builder: (_) => AlertDialog(
-      title: const Text("Spelersnames aanpassen"),
+      title: const Text("Spelersnamen aanpassen"),
       content: SizedBox(
-        width: 400,
+        width: 420,
         child: ListView(
           shrinkWrap: true,
           children: players.names.keys

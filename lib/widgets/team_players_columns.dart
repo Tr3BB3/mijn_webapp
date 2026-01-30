@@ -1,9 +1,12 @@
 // lib/widgets/team_players_columns.dart
-
 import 'package:flutter/material.dart';
 import '../models/goal.dart';
 import '../models/players.dart';
 
+/// Twee kolommen per team:
+/// - links: 1..8
+/// - rechts: 9..16
+/// Knoppen tonen de NAAM van de speler; klik → onPick(nummer)
 class TeamPlayersColumns extends StatelessWidget {
   final Team team;
   final TeamPlayers players;
@@ -33,11 +36,11 @@ class TeamPlayersColumns extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: color.withOpacity(.15),
+            backgroundColor: color.withOpacity(.12),
             foregroundColor: color,
           ),
           onPressed: () => onPick(n),
-          child: Text("$name$count"),
+          child: Text("$name$count", overflow: TextOverflow.ellipsis),
         ),
       );
     }
@@ -48,7 +51,7 @@ class TeamPlayersColumns extends StatelessWidget {
     return Row(
       children: [
         Expanded(child: Column(children: left.map(button).toList())),
-        const SizedBox(width: 16),
+        const SizedBox(width: 12),
         Expanded(child: Column(children: right.map(button).toList())),
       ],
     );

@@ -5,22 +5,28 @@ import '../models/goal.dart';
 import '../models/players.dart';
 
 class MatchController {
+  // Scores
   int homeScore = 0;
   int awayScore = 0;
 
+  // Doelpuntenlijst
   final List<Goal> goals = [];
 
+  // Timer
   bool isRunning = false;
   int elapsedSeconds = 0;
   Timer? _timer;
 
+  // Spelersnamen
   TeamPlayers homePlayers = TeamPlayers.default16();
   TeamPlayers awayPlayers = TeamPlayers.default16();
 
+  // UI callback
   final void Function()? onTick;
 
   MatchController({this.onTick});
 
+  // Timer
   void start() {
     if (isRunning) return;
     isRunning = true;
@@ -28,39 +34,51 @@ class MatchController {
       elapsedSeconds++;
       onTick?.call();
     });
+    onTick?.call();
   }
 
   void stop() {
     isRunning = false;
     _timer?.cancel();
+    _timer = null;
+    onTick?.call();
   }
 
   void reset() {
     stop();
+    elapsedSeconds = 0;
     homeScore = 0;
     awayScore = 0;
-    elapsedSeconds = 0;
     goals.clear();
     onTick?.call();
   }
 
-  void addGoal(Team team, int number, GoalType type) {
-    goals.add(Goal(
-      secondStamp: elapsedSeconds,
-      team: team,
-      playerNumber: number,
-      type: type,
-    ));
+  // Goal toevoegen (met optionele 'concededPlayerNumber')
+  void addGoal(
+    Team team,
+    int playerNumber,
+    GoalType type, {
+    int? concededPlayerNumber,
+  }) {
+    goals.add(
+      Goal(
+        secondStamp: elapsedSeconds,
+        team: team,
+        playerNumber: playerNumber,
+        type: type,
+        concededPlayerNumber: concededPlayerNumber,
+      ),
+    );
 
     if (team == Team.home) {
       homeScore++;
     } else {
       awayScore++;
     }
-
     onTick?.call();
   }
 
+  // Spelers updaten
   void updateHomePlayers(TeamPlayers players) {
     homePlayers = players;
     onTick?.call();
@@ -73,5 +91,6 @@ class MatchController {
 
   void dispose() {
     _timer?.cancel();
+    _timer = null;
   }
 }
