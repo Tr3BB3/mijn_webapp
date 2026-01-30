@@ -5,38 +5,22 @@ import '../models/goal.dart';
 import '../models/players.dart';
 
 class MatchController {
-  // -----------------------
-  // SCORES
-  // -----------------------
   int homeScore = 0;
   int awayScore = 0;
 
-  // -----------------------
-  // GOALS (volledige lijst)
-  // -----------------------
   final List<Goal> goals = [];
 
-  // -----------------------
-  // TIMER
-  // -----------------------
   bool isRunning = false;
   int elapsedSeconds = 0;
   Timer? _timer;
 
-  // -----------------------
-  // SPELERSNAMEN
-  // -----------------------
   TeamPlayers homePlayers = TeamPlayers.default16();
   TeamPlayers awayPlayers = TeamPlayers.default16();
 
-  // Callback naar UI
   final void Function()? onTick;
 
   MatchController({this.onTick});
 
-  // -----------------------
-  // TIMER LOGICA
-  // -----------------------
   void start() {
     if (isRunning) return;
     isRunning = true;
@@ -59,18 +43,12 @@ class MatchController {
   void reset() {
     stop();
     elapsedSeconds = 0;
-
     homeScore = 0;
     awayScore = 0;
     goals.clear();
-
-    // Let op: spelersnamen blijven bestaan
     onTick?.call();
   }
 
-  // -----------------------
-  // GOAL TOEVOEGEN
-  // -----------------------
   void addGoal(Team team, int playerNumber, GoalType type) {
     goals.add(
       Goal(
@@ -90,9 +68,6 @@ class MatchController {
     onTick?.call();
   }
 
-  // -----------------------
-  // SPELERSNAMEN BEWERKEN
-  // -----------------------
   void updateHomePlayers(TeamPlayers updated) {
     homePlayers = updated;
     onTick?.call();
@@ -103,9 +78,6 @@ class MatchController {
     onTick?.call();
   }
 
-  // -----------------------
-  // OPRUIMEN
-  // -----------------------
   void dispose() {
     _timer?.cancel();
     _timer = null;
