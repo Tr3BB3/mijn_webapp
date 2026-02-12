@@ -145,6 +145,16 @@ class _HomePageState extends State<HomePage> {
                               onPressed: _controller.stop,
                               label: const Text('Stop'),
                             ),
+                            OutlinedButton.icon(
+                              icon: const Icon(Icons.undo),
+                              onPressed: _controller.canUndo
+                                  ? () {
+                                      _controller.undo();
+                                      _safeSetState();
+                                    }
+                                  : null,
+                              label: const Text('Undo'),
+                            ),
                             TextButton.icon(
                               icon: const Icon(Icons.replay),
                               onPressed: _controller.reset,

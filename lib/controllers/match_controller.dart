@@ -93,4 +93,20 @@ class MatchController {
     _timer?.cancel();
     _timer = null;
   }
+
+  // Undo support: canUndo == there is at least one goal to remove
+  bool get canUndo => goals.isNotEmpty;
+
+  /// Remove the most recent goal and update scores accordingly.
+  /// If there is no goal, this is a no-op.
+  void undo() {
+    if (goals.isEmpty) return;
+    final last = goals.removeLast();
+    if (last.team == Team.home) {
+      homeScore = (homeScore > 0) ? homeScore - 1 : 0;
+    } else {
+      awayScore = (awayScore > 0) ? awayScore - 1 : 0;
+    }
+    onTick?.call();
+  }
 }
