@@ -51,7 +51,7 @@ class TeamPlayersColumns extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         // If narrow (e.g. phones) show a single stacked column of all players
-        if (constraints.maxWidth < 420) {
+        if (constraints.maxWidth < 200) {
           final all = List.generate(16, (i) => i + 1);
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
