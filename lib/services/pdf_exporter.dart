@@ -87,23 +87,36 @@ class PdfExporter {
             ),
             cellStyle: cell,
             border: null,
-            headers: ['Tijd', 'Team', 'Speler', 'Type', 'Tegen'],
-            data: [
-              for (final g in c.goals)
-                [
+            headers: ['Tijd', 'Team', 'Speler', 'Type', 'Tegen', 'Stand'],
+            data: () {
+              final rows = <List<String>>[];
+              var home = 0;
+              var away = 0;
+              for (final g in c.goals) {
+                if (g.team == Team.home) {
+                  home++;
+                } else {
+                  away++;
+                }
+
+                rows.add([
                   fmtTime(g.secondStamp),
                   g.team == Team.home ? homeTeamName : awayTeamName,
                   scorerName(g),
                   g.type.label,
                   concededName(g) ?? '',
-                ]
-            ],
+                  '$home – $away',
+                ]);
+              }
+              return rows;
+            }(),
             columnWidths: {
               0: const pw.FlexColumnWidth(1),
               1: const pw.FlexColumnWidth(1.4),
               2: const pw.FlexColumnWidth(2),
               3: const pw.FlexColumnWidth(2),
               4: const pw.FlexColumnWidth(1.6),
+              5: const pw.FlexColumnWidth(1.2),
             },
             cellAlignment: pw.Alignment.centerLeft,
           ),
