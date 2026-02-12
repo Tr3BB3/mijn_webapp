@@ -48,12 +48,26 @@ class TeamPlayersColumns extends StatelessWidget {
     final left = List.generate(8, (i) => i + 1);
     final right = List.generate(8, (i) => i + 9);
 
-    return Row(
-      children: [
-        Expanded(child: Column(children: left.map(button).toList())),
-        const SizedBox(width: 12),
-        Expanded(child: Column(children: right.map(button).toList())),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // If narrow (e.g. phones) show a single stacked column of all players
+        if (constraints.maxWidth < 420) {
+          final all = List.generate(16, (i) => i + 1);
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: all.map(button).toList(),
+          );
+        }
+
+        // Otherwise show two columns (1..8 and 9..16)
+        return Row(
+          children: [
+            Expanded(child: Column(children: left.map(button).toList())),
+            const SizedBox(width: 12),
+            Expanded(child: Column(children: right.map(button).toList())),
+          ],
+        );
+      },
     );
   }
 }
