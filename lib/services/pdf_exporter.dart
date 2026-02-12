@@ -122,12 +122,39 @@ class PdfExporter {
           ),
 
           pw.SizedBox(height: 16),
-
           pw.Text('Samenvatting', style: h2),
           pw.SizedBox(height: 6),
           pw.Bullet(text: 'Totale speeltijd: ${fmtTime(c.elapsedSeconds)}'),
           pw.Bullet(text: 'Totaal doelpunten: ${c.goals.length}'),
           pw.Bullet(text: "KV Flamingo's: ${c.homeScore}  |  Tegenstanders: ${c.awayScore}"),
+
+          pw.SizedBox(height: 12),
+          pw.Text("Spelerssamenvatting (KV Flamingo's)", style: h2),
+          pw.SizedBox(height: 6),
+          // Per-home-player stats: goals scored and conceded
+          pw.Table.fromTextArray(
+            headerStyle: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+            headerDecoration: pw.BoxDecoration(color: p.PdfColors.grey300),
+            cellStyle: cell,
+            headers: ['Speler', 'Doelpunten', 'Tegendoelpunten'],
+            data: () {
+              final rows = <List<String>>[];
+              // iterate player numbers in home team
+              final playerNumbers = c.homePlayers.names.keys.toList()..sort();
+              for (final n in playerNumbers) {
+                final name = c.homePlayers.getName(n);
+                final scored = c.goals.where((g) => g.team == Team.home && g.playerNumber == n).length;
+                final conceded = c.goals.where((g) => g.concededPlayerNumber == n).length;
+                rows.add([name, scored.toString(), conceded.toString()]);
+              }
+              return rows;
+            }(),
+            columnWidths: {
+              0: const pw.FlexColumnWidth(3),
+              1: const pw.FlexColumnWidth(1),
+              2: const pw.FlexColumnWidth(1),
+            },
+          ),
         ],
       ),
     );
