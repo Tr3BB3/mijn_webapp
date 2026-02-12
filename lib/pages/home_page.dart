@@ -43,8 +43,8 @@ class _HomePageState extends State<HomePage> {
   Future<void> _exportPdf() async {
     await PdfExporter.shareReport(
       c: _controller,
-      homeTeamName: 'Thuis',
-      awayTeamName: 'Uit',
+      homeTeamName: "KV Flamingo's",
+      awayTeamName: 'Tegenstanders',
       fileName: 'wedstrijdverslag.pdf',
     );
   }
@@ -278,9 +278,9 @@ class _ScoreBoard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: _TeamScore(
+                    child: _TeamScore(
                     team: Team.home,
-                    title: 'Thuis',
+                    title: "KV Flamingo's",
                     score: homeScore,
                     color: Colors.blue.shade600,
                     onPick: onHomePick,
@@ -293,7 +293,7 @@ class _ScoreBoard extends StatelessWidget {
                 Expanded(
                   child: _TeamScore(
                     team: Team.away,
-                    title: 'Uit',
+                    title: 'Tegenstanders',
                     score: awayScore,
                     color: Colors.red.shade600,
                     onPick: onAwayPick,

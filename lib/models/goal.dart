@@ -61,5 +61,6 @@ class Goal {
     return '$m:$s';
   }
 
-  String get teamLabel => team == Team.home ? "Thuis" : "Uit";
+  String get teamLabel => team == Team.home ? "KV Flamingo's" : "Tegenstanders";
+  
 }

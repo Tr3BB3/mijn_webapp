@@ -11,8 +11,8 @@ import '../models/goal.dart';
 class PdfExporter {
   static Future<Uint8List> buildReport({
     required MatchController c,
-    String homeTeamName = 'Thuis',
-    String awayTeamName = 'Uit',
+    String homeTeamName = "KV Flamingo's",
+    String awayTeamName = 'Tegenstanders',
     DateTime? dateTime,
   }) async {
     final now = dateTime ?? DateTime.now();
@@ -105,7 +105,7 @@ class PdfExporter {
                   scorerName(g),
                   g.type.label,
                   concededName(g) ?? '',
-                  '$home – $away',
+                  '$home - $away',
                 ]);
               }
               return rows;
@@ -127,7 +127,7 @@ class PdfExporter {
           pw.SizedBox(height: 6),
           pw.Bullet(text: 'Totale speeltijd: ${fmtTime(c.elapsedSeconds)}'),
           pw.Bullet(text: 'Totaal doelpunten: ${c.goals.length}'),
-          pw.Bullet(text: 'Thuis: ${c.homeScore}  |  Uit: ${c.awayScore}'),
+          pw.Bullet(text: "KV Flamingo's: ${c.homeScore}  |  Tegenstanders: ${c.awayScore}"),
         ],
       ),
     );
@@ -138,8 +138,8 @@ class PdfExporter {
   /// Download/share PDF (werkt op Web + mobiel + desktop)
   static Future<void> shareReport({
     required MatchController c,
-    String homeTeamName = 'Thuis',
-    String awayTeamName = 'Uit',
+    String homeTeamName = "KV Flamingo's",
+    String awayTeamName = 'Tegenstanders',
     DateTime? dateTime,
     String fileName = 'wedstrijdverslag.pdf',
   }) async {
